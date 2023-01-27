@@ -62,7 +62,7 @@
 
                   &nbsp; 
                   
-                  <select id="">
+                  <select id="select{{product.id}}">
                   
                     <option selected>
                   
@@ -82,7 +82,7 @@
                   
                   <br> <br>
 
-                  <button type="button" id="update-button"
+                  <button type="button" data-index="{{product.id}}"
                     class="btn btn-primary btn-sm update-button">
                     Update
                   
@@ -90,7 +90,7 @@
                   
                   &nbsp;
 
-                  <button type="button" id="delete-button"
+                  <button type="button" data-index="{{product.id}}"
                     class="btn btn-danger btn-sm delete-button">
                     Delete
         
@@ -117,7 +117,7 @@
 
       <div class="col-12 text-end">
  
-        <div class="h6 fw-bold"> Sub total: $ <div id="subtotal" class="d-inline-flex">{{cart.get_total}}</div></div>
+        <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{cart.get_total}}</div></div>
  
       </div>
  
@@ -130,6 +130,87 @@
   
 
  </main>
+
+ <script>
+
+    $(document).on('click', '.delete-button', function(e){
+
+        e.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url: '{%url "cart-delete" %}',
+            data: {
+                product_id: $(this).data('index'),
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                action: 'post'
+
+            },
+
+            success: function(json){
+
+
+                location.reload();
+
+
+                document.getElementById("cart-qty").textContent = json.qty
+
+                document.getElementById("total").textContent = json.total
+
+
+
+            },
+
+            error: function(xhr, errmsg, err){
+
+            }
+
+        });
+    })
+
+
+
+    $(document).on('click', '.update-button', function(e){
+
+        e.preventDefault();
+
+        var theproductid = $(this).data('index');
+
+        $.ajax({
+            type: 'POST',
+            url: '{%url "cart-update" %}',
+            data: {
+
+                product_id: $(this).data('index'),
+                product_quantity: $('#select' + theproductid + ' option:selected').text(),
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                action: 'post'
+
+            },
+
+            success: function(json){
+
+
+                location.reload();
+
+
+                document.getElementById("cart-qty").textContent = json.qty
+
+                document.getElementById("total").textContent = json.total
+
+
+
+            },
+
+            error: function(xhr, errmsg, err){
+
+            }
+
+        });
+    })
+
+
+ </script>
 
 
 
